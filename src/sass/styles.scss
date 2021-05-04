@@ -1,0 +1,18 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  font-size: 62.5%;
+}
+
+body {
+  @import "./lib/variables";
+  font-family: $font-family;
+  background-image: url(../img/bg-main.jpg);
+  background-repeat: no-repeat;
+  padding-bottom: 10px;
+
+  @import "./sections/main";
+}
