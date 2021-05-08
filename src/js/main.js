@@ -10,6 +10,8 @@ const containerInfoSecondary = document.getElementById("info-secondary");
 const imgHome = document.getElementById("img-home");
 const popUpContainer = document.getElementById("popup");
 const btnClosePopUp = document.getElementById("btn-close");
+const errorPopUp = document.getElementById("error-popup");
+const btnCloseError = document.getElementById("btn-close-error");
 
 btnSearch.addEventListener("click", () => {
   if (inputUser.value != "") {
@@ -23,6 +25,7 @@ inputUser.addEventListener("keyup", e => {
 });
 
 function searchCity() {
+  animationOut();
   containerInfoPrincipal.style.display = "flex";
   imgHome.style.display = "none";
   let cityName = inputUser.value;
@@ -33,10 +36,12 @@ function searchCity() {
 function fetchData(url) {
   fetch(url)
   .then(response => response.json())
-  .then(data => weatherData(data));
+  .then(data => weatherData(data))
+  .catch(error => errorFetch(error));
 }
 
 function weatherData(data) {
+  closeErrorFecth();
   const { lat, lon} = data.coord;
   const infoData = {
     temperature: data.main.temp,
@@ -48,10 +53,17 @@ function weatherData(data) {
   }
   
   Object.keys(infoData).forEach(key => {
-    document.getElementById(key).textContent = infoData[key];
+    if (key == "temperature") {
+      document.getElementById(key).textContent = `${infoData[key]}°C`;
+    }
+    else if(key == "humidity") {
+      document.getElementById(key).textContent = `Humedad: ${infoData[key]}%`;
+    }
+    else {
+      document.getElementById(key).textContent = `${infoData[key]}`;
+    } 
   });
   
-  containerInfoSecondary.style.display = "grid";
   let cityName = data.name;
   let countryName = data.sys.country;
   fetchDataDaily(lat, lon, cityName, countryName);
@@ -72,6 +84,7 @@ function fetchDataDaily(lat,lon,cityName,countryName) {
 }
 
 function weatherDataDaily(data,cityName,countryName) {
+  containerInfoSecondary.style.display = "grid";
   let itemCard = document.querySelectorAll(".item--card");
   let itemsArr = [...itemCard];
   let i = 0;
@@ -86,7 +99,15 @@ function weatherDataDaily(data,cityName,countryName) {
     }
 
     Object.keys(infoDataDaily).forEach(key => {
-      e.querySelector(`.${key}`).textContent = infoDataDaily[key];
+      if(key === "temperature") {
+        e.querySelector(`.${key}`).textContent = `${infoDataDaily[key]}°C`;
+      }
+      else if(key === "humidity") {
+        e.querySelector(`.${key}`).textContent = `Humedad: ${infoDataDaily[key]}%`;
+      }
+      else {
+        e.querySelector(`.${key}`).textContent = infoDataDaily[key];
+      }
     });
     i++;
   })
@@ -99,15 +120,30 @@ function getDateDaily(days) {
 }
 
 function onLoad() {
-  setTimeout(animationEntry,2000);
+  setTimeout(animationEntry,1500);
 }
 
 function animationEntry() {
   popUpContainer.style.top = "calc(60% - 150px)";
   setTimeout(animationOut,15000);
 }
+
 btnClosePopUp.addEventListener("click", animationOut);
 
 function animationOut() {
   popUpContainer.style.top = "-100%";
+}
+
+function errorFetch(error) {
+  containerInfoPrincipal.style.display = "none";
+  imgHome.style.display = "flex";
+  errorPopUp.style.right = "calc(10vw - 100px)";
+  containerInfoSecondary.style.display = "none";
+  console.error(error);
+}
+
+btnCloseError.addEventListener("click", closeErrorFecth);
+
+function closeErrorFecth() {
+  errorPopUp.style.right = "-100%";
 }

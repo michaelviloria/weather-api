@@ -9,7 +9,9 @@
   border: 1px solid white;
   border-radius: 10px;
   position: relative;
+  overflow: hidden;
   @import "./home--popup";
+  @import "./home--error-popup";
   @import "./home--search";
   @import "./home--info";
 }

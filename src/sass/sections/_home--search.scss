@@ -45,6 +45,7 @@
       }
       .fas {
         color: map-get($map: $colors, $key: search);
+        cursor: pointer;
       }
     }
   }
